@@ -4,7 +4,6 @@ import "./simple-tooltip.js";
 
 @customElement("my-content")
 export class MyContent extends LitElement {
-  /* playground-fold */
   static styles = css`
     .box {
       height: 80px;
@@ -36,7 +35,6 @@ export class MyContent extends LitElement {
 
   @property()
   name = "Katara";
-  /* playground-fold-end */
 
   render() {
     return html`
