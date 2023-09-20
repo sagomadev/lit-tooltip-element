@@ -19,7 +19,10 @@ export class SimpleTooltip extends LitElement {
     }
   `;
 
-  // Target for which to show tooltip
+  // Position offset
+  @property({ type: Number })
+  offset = 4;
+
   _target: Element | null = null;
 
   get target() {
@@ -35,8 +38,8 @@ export class SimpleTooltip extends LitElement {
         this.target!.removeEventListener(name, this.hide)
       );
     }
+    // Add events to new target
     if (target) {
-      // Add events to new target
       enterEvents.forEach((name) => target!.addEventListener(name, this.show));
       leaveEvents.forEach((name) => target!.addEventListener(name, this.hide));
     }
@@ -46,7 +49,6 @@ export class SimpleTooltip extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.hide();
-    // Setup target if needed
     this.target ??= this.previousElementSibling;
   }
 
@@ -56,6 +58,10 @@ export class SimpleTooltip extends LitElement {
 
   show = () => {
     this.style.cssText = "";
+    // Position the tooltip near the target.
+    const { x, y, height } = this.target!.getBoundingClientRect();
+    this.style.left = `${x}px`;
+    this.style.top = `${y + height + this.offset}px`;
   };
 
   hide = () => {
