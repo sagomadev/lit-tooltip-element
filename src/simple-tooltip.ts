@@ -1,7 +1,6 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-// Positioning library
 import {
   computePosition,
   autoPlacement,
@@ -23,11 +22,25 @@ export class SimpleTooltip extends LitElement {
       border-radius: 4px;
       background: #ccc;
       pointer-events: none;
+      /* Animate in */
+      opacity: 0;
+      transform: scale(0.75);
+      transition: opacity, transform;
+      transition-duration: 0.33s;
+    }
+
+    :host([showing]) {
+      opacity: 1;
+      transform: scale(1);
     }
   `;
 
   @property({ type: Number })
   offset = 4;
+
+  // Attribute for styling "showing"
+  @property({ reflect: true, type: Boolean })
+  showing = false;
 
   _target: Element | null = null;
 
@@ -52,10 +65,16 @@ export class SimpleTooltip extends LitElement {
     this._target = target;
   }
 
+  constructor() {
+    super();
+    // Finish hiding at end of animation
+    this.addEventListener("transitionend", this.finishHide);
+  }
+
   connectedCallback() {
     super.connectedCallback();
-    this.hide();
     this.target ??= this.previousElementSibling;
+    this.finishHide();
   }
 
   render() {
@@ -64,7 +83,6 @@ export class SimpleTooltip extends LitElement {
 
   show = () => {
     this.style.cssText = "";
-    // Robust positioning
     computePosition(this.target, this, {
       strategy: "fixed",
       middleware: [
@@ -76,9 +94,22 @@ export class SimpleTooltip extends LitElement {
       this.style.left = `${x}px`;
       this.style.top = `${y}px`;
     });
+    this.showing = true;
   };
 
   hide = () => {
-    this.style.display = "none";
+    this.showing = false;
   };
+
+  finishHide = () => {
+    if (!this.showing) {
+      this.style.display = "none";
+    }
+  };
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "simple-tooltip": SimpleTooltip;
+  }
 }
