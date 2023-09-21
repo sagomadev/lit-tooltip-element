@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@floating-ui/dom": "^1.5.3",
     "lit": "^2.7.6"
   },
   "devDependencies": {

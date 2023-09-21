@@ -1,7 +1,14 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-// Events to turn on/off the tooltip
+// Positioning library
+import {
+  computePosition,
+  autoPlacement,
+  offset,
+  shift,
+} from "@floating-ui/dom";
+
 const enterEvents = ["pointerenter", "focus"];
 const leaveEvents = ["pointerleave", "blur", "keydown", "click"];
 
@@ -19,7 +26,6 @@ export class SimpleTooltip extends LitElement {
     }
   `;
 
-  // Position offset
   @property({ type: Number })
   offset = 4;
 
@@ -58,10 +64,18 @@ export class SimpleTooltip extends LitElement {
 
   show = () => {
     this.style.cssText = "";
-    // Position the tooltip near the target.
-    const { x, y, height } = this.target!.getBoundingClientRect();
-    this.style.left = `${x}px`;
-    this.style.top = `${y + height + this.offset}px`;
+    // Robust positioning
+    computePosition(this.target, this, {
+      strategy: "fixed",
+      middleware: [
+        offset(this.offset),
+        shift(),
+        autoPlacement({ allowedPlacements: ["top", "bottom"] }),
+      ],
+    }).then(({ x, y }: { x: number; y: number }) => {
+      this.style.left = `${x}px`;
+      this.style.top = `${y}px`;
+    });
   };
 
   hide = () => {
