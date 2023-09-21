@@ -1,7 +1,7 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./simple-tooltip.js";
-import { SimpleTooltip } from "./simple-tooltip.js";
+import { tooltip } from "./simple-tooltip.js";
 
 @customElement("my-content")
 export class MyContent extends LitElement {
@@ -36,7 +36,6 @@ export class MyContent extends LitElement {
 
   @property()
   name = "Katara";
-
   render() {
     return html`
       <h3>Welcome</h3>
@@ -49,7 +48,11 @@ export class MyContent extends LitElement {
         <simple-tooltip>Enter your name...</simple-tooltip>
       </p>
       <p>
-        <span id="greeting"
+        <span
+          id="greeting"
+          ${tooltip(
+            html`${this.name}, there's coffee available in the lounge.`
+          )}
           >Hello, ${this.name}! <span class="icon">info_outline</span></span
         >
       </p>
@@ -70,12 +73,5 @@ export class MyContent extends LitElement {
 
   private _inputChange(e: InputEvent) {
     this.name = (e.target as HTMLInputElement).value;
-  }
-
-  firstUpdated() {
-    const greeting = this.shadowRoot!.getElementById("greeting")!;
-    SimpleTooltip.lazy(greeting, (tooltip: SimpleTooltip) => {
-      tooltip.textContent = `${this.name}, there's coffee available in the lounge.`;
-    });
   }
 }
